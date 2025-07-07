@@ -1,0 +1,18 @@
+{
+  "name": "p5.record.js",
+  "version": "0.0.1",
+  "description": "p5.js addon providing functions to record HTML canvas based sketches",
+  "type": "module",
+  "exports": {
+    ".": "./dist/p5.record.esm.js"
+  },
+  "scripts": {
+    "build": "rollup -c rollup.config.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.41.1"
+  }
+}
