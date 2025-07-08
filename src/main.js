@@ -53,7 +53,7 @@ export function p5Record(p5, fn, lifecycles){
       const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = "recording.mp4";
+      link.download = "recording.webm";
       link.click();
     });
 
