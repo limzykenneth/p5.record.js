@@ -1,24 +1,24 @@
 export function p5Record(p5, fn, lifecycles){
-  let recorder;
+  let recorder, stream, options;
 
   // check p5.VERSION
+  lifecycles.postdraw = function() {
+    if(recorder && recorder.state === "recording" && options?.frameRate === "manual"){
+      stream.getVideoTracks()[0].requestFrame();
+    }
+  };
 
-  lifecycles.predraw = function() { };
-  lifecycles.postdraw = function() { };
-  lifecycles.remove = function() { };
-
-  let options;
-
-  fn.setRecording = function(options) {
-    // framerate https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/captureStream#framerate
-    // mime type
-    // recording type (requestFrame() method)
-    options = options;
-
+  fn.setRecording = function(opt) {
+    if(opt.frameRate === "manual" && !("CanvasCaptureMediaStreamTrack" in window)){
+      console.error("Your browser does not support directly specifying frame capture timing with { frameRate: 'manual' }.");
+      return;
+    }
+    options = opt;
   };
 
   fn.startRecording = function() {
-    recorder = setupRecorder.call(this, options.frameRate, options.mimeType);
+    const frameRate = options?.frameRate === "manual" ? 0 : options?.frameRate;
+    ({recorder, stream} = setupRecorder.call(this, frameRate, options?.mimeType));
     recorder.start();
   };
 
@@ -69,7 +69,10 @@ export function p5Record(p5, fn, lifecycles){
       console.log("recording resumed");
     });
 
-    return recorder;
+    return {
+      recorder,
+      stream
+    };
   }
 };
 
