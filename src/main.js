@@ -1,11 +1,44 @@
 export function p5Record(p5, fn, lifecycles){
-  let stream, recorder, chunks = [];
+  let recorder;
 
-  lifecycles.presetup = function() { };
-  lifecycles.postsetup = function() {
-    stream = this.canvas.captureStream(30);
-    recorder = new MediaRecorder(stream, {
-      mimeType: "video/webm;codecs=vp8"
+  // check p5.VERSION
+
+  lifecycles.predraw = function() { };
+  lifecycles.postdraw = function() { };
+  lifecycles.remove = function() { };
+
+  let options;
+
+  fn.setRecording = function(options) {
+    // framerate https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/captureStream#framerate
+    // mime type
+    // recording type (requestFrame() method)
+    options = options;
+
+  };
+
+  fn.startRecording = function() {
+    recorder = setupRecorder.call(this, options.frameRate, options.mimeType);
+    recorder.start();
+  };
+
+  fn.stopRecording = function() {
+    recorder.stop();
+  };
+
+  fn.pauseRecording = function() {
+    recorder.pause();
+  };
+
+  fn.resumeRecording = function() {
+    recorder.resume();
+  };
+
+  function setupRecorder(frameRate, mimeType){
+    const chunks = [];
+    const stream = this.canvas.captureStream(frameRate ?? this.frameRate());
+    const recorder = new MediaRecorder(stream, {
+      mimeType: mimeType ?? "video/webm;codecs=vp8"
     });
 
     recorder.addEventListener("start", (e) => {
@@ -14,8 +47,10 @@ export function p5Record(p5, fn, lifecycles){
 
     recorder.addEventListener("stop", (e) => {
       console.log("recording stopped");
-      console.log(chunks);
-      const blobUrl = URL.createObjectURL(chunks[0]);
+      const blob = new Blob(chunks);
+      console.log(blob);
+
+      const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
       link.download = "recording.mp4";
@@ -33,27 +68,9 @@ export function p5Record(p5, fn, lifecycles){
     recorder.addEventListener("resume", (e) => {
       console.log("recording resumed");
     });
-  };
 
-  lifecycles.predraw = function() { };
-  lifecycles.postdraw = function() { };
-  lifecycles.remove = function() { };
-
-  fn.startRecording = function() {
-    recorder.start();
-  };
-
-  fn.stopRecording = function() {
-    recorder.stop();
-  };
-
-  fn.pauseRecording = function() {
-    recorder.pause();
-  };
-
-  fn.resumeRecording = function() {
-    recorder.resume();
-  };
+    return recorder;
+  }
 };
 
 if(typeof p5 !== "undefined"){

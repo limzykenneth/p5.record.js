@@ -7,7 +7,7 @@ export default [
       file: "dist/p5.record.min.js",
       format: "iife",
       plugins: [
-        terser()
+        process.env.ROLLUP_WATCH ? null :  terser()
       ]
     }
   },
