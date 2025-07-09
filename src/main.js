@@ -34,7 +34,7 @@ export function p5Record(p5, fn, lifecycles){
     recorder.resume();
   };
 
-  function setupRecorder(frameRate, mimeType){
+  function setupRecorder(frameRate, mimeType) {
     const chunks = [];
     const stream = this.canvas.captureStream(frameRate ?? this.frameRate());
     const recorder = new MediaRecorder(stream, {
@@ -46,10 +46,7 @@ export function p5Record(p5, fn, lifecycles){
     });
 
     recorder.addEventListener("stop", (e) => {
-      console.log("recording stopped");
       const blob = new Blob(chunks);
-      console.log(blob);
-
       const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
