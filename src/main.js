@@ -1,5 +1,7 @@
+import { Recorder } from "./Recorder.js";
+
 export function p5Record(p5, fn, lifecycles){
-  let recorder, stream, options;
+  let recorder, options;
 
   const p5VersionSemver = p5.VERSION.split(".")
     .map((n) => parseInt(n));
@@ -14,7 +16,7 @@ export function p5Record(p5, fn, lifecycles){
 
   lifecycles.postdraw = function() {
     if(recorder && recorder.state === "recording" && options?.frameRate === "manual"){
-      stream.getVideoTracks()[0].requestFrame();
+      recorder.frame();
     }
   };
 
@@ -27,7 +29,11 @@ export function p5Record(p5, fn, lifecycles){
   };
 
   fn.startRecording = function() {
-    ({recorder, stream} = setupRecorder.call(this, options));
+    options = Object.assign({
+      source: this.canvas,
+      frameRate: this.getTargetFrameRate()
+    }, options);
+    recorder = new Recorder(options);
     recorder.start();
   };
 
@@ -42,57 +48,14 @@ export function p5Record(p5, fn, lifecycles){
   fn.resumeRecording = function() {
     recorder.resume();
   };
-};
 
-function setupRecorder(options) {
-  const frameRate =
-    (options?.frameRate === "manual" ? 0 : options?.frameRate) ??
-    this.getTargetFrameRate();
-  const chunks = [];
-  const stream = (
-    options?.source instanceof HTMLCanvasElement ?
-      options.source :
-      (
-        options?.source?.canvas instanceof HTMLCanvasElement ?
-          options.source.canvas :
-          this.canvas
-      )
-    ).captureStream(frameRate);
-  const recorder = new MediaRecorder(stream, {
-    mimeType: options?.mimeType ?? "video/webm;codecs=vp8"
-  });
-
-  recorder.addEventListener("start", (e) => {
-    console.log("recording started");
-  });
-
-  recorder.addEventListener("stop", (e) => {
-    const blob = new Blob(chunks);
-    const blobUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = blobUrl;
-    link.download = "recording.webm";
-    link.click();
-  });
-
-  recorder.addEventListener("dataavailable", (e) => {
-    chunks.push(e.data);
-  });
-
-  recorder.addEventListener("pause", (e) => {
-    console.log("recording paused");
-  });
-
-  recorder.addEventListener("resume", (e) => {
-    console.log("recording resumed");
-  });
-
-  return {
-    recorder,
-    stream
+  fn.createRecording = function(options) {
+    return new Recorder(options);
   };
-}
+};
 
 if(typeof p5 !== "undefined"){
   p5.registerAddon(p5Record);
 }
+
+export { Recorder };
