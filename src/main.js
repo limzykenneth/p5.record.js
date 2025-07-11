@@ -1,7 +1,17 @@
 export function p5Record(p5, fn, lifecycles){
   let recorder, stream, options;
 
-  // check p5.VERSION
+  const p5VersionSemver = p5.VERSION.split(".")
+    .map((n) => parseInt(n));
+  if(!(
+    p5VersionSemver[0] > 2 ||
+    (p5VersionSemver[0] > 2 && p5VersionSemver[1] > 0) ||
+    (p5VersionSemver[0] === 2 && p5VersionSemver[1] === 0 && p5VersionSemver[2] >= 3)
+  )){
+    console.error(`p5.record.js requires p5.js >= 2.0.3`);
+    return;
+  }
+
   lifecycles.postdraw = function() {
     if(recorder && recorder.state === "recording" && options?.frameRate === "manual"){
       stream.getVideoTracks()[0].requestFrame();
@@ -36,7 +46,15 @@ export function p5Record(p5, fn, lifecycles){
 
   function setupRecorder(frameRate, mimeType) {
     const chunks = [];
-    const stream = this.canvas.captureStream(frameRate ?? this.frameRate());
+    const stream = (
+      options?.source instanceof HTMLCanvasElement ?
+        options.source :
+        (
+          options?.source?.canvas instanceof HTMLCanvasElement ?
+            options.source.canvas :
+            this.canvas
+        )
+      ).captureStream(frameRate ?? this.frameRate());
     const recorder = new MediaRecorder(stream, {
       mimeType: mimeType ?? "video/webm;codecs=vp8"
     });

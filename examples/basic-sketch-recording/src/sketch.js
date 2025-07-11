@@ -1,4 +1,3 @@
-let data;
 let startBtn, stopBtn, pauseBtn, resumeBtn;
 
 function setup() {
