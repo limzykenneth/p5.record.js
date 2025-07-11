@@ -8,11 +8,7 @@ export class Recorder {
     const stream = (
       options.source instanceof HTMLCanvasElement ?
         options.source :
-        (
-          options.source.canvas instanceof HTMLCanvasElement ?
-            options.source.canvas :
-            this.canvas
-        )
+        options.source.canvas
       ).captureStream(frameRate);
     const recorder = new MediaRecorder(stream, {
       mimeType: options.mimeType ?? "video/webm;codecs=vp8"
