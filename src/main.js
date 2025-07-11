@@ -27,8 +27,7 @@ export function p5Record(p5, fn, lifecycles){
   };
 
   fn.startRecording = function() {
-    const frameRate = options?.frameRate === "manual" ? 0 : options?.frameRate;
-    ({recorder, stream} = setupRecorder.call(this, frameRate, options?.mimeType));
+    ({recorder, stream} = setupRecorder.call(this, options));
     recorder.start();
   };
 
@@ -43,53 +42,56 @@ export function p5Record(p5, fn, lifecycles){
   fn.resumeRecording = function() {
     recorder.resume();
   };
-
-  function setupRecorder(frameRate, mimeType) {
-    const chunks = [];
-    const stream = (
-      options?.source instanceof HTMLCanvasElement ?
-        options.source :
-        (
-          options?.source?.canvas instanceof HTMLCanvasElement ?
-            options.source.canvas :
-            this.canvas
-        )
-      ).captureStream(frameRate ?? this.frameRate());
-    const recorder = new MediaRecorder(stream, {
-      mimeType: mimeType ?? "video/webm;codecs=vp8"
-    });
-
-    recorder.addEventListener("start", (e) => {
-      console.log("recording started");
-    });
-
-    recorder.addEventListener("stop", (e) => {
-      const blob = new Blob(chunks);
-      const blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = "recording.webm";
-      link.click();
-    });
-
-    recorder.addEventListener("dataavailable", (e) => {
-      chunks.push(e.data);
-    });
-
-    recorder.addEventListener("pause", (e) => {
-      console.log("recording paused");
-    });
-
-    recorder.addEventListener("resume", (e) => {
-      console.log("recording resumed");
-    });
-
-    return {
-      recorder,
-      stream
-    };
-  }
 };
+
+function setupRecorder(options) {
+  const frameRate =
+    (options?.frameRate === "manual" ? 0 : options?.frameRate) ??
+    this.getTargetFrameRate();
+  const chunks = [];
+  const stream = (
+    options?.source instanceof HTMLCanvasElement ?
+      options.source :
+      (
+        options?.source?.canvas instanceof HTMLCanvasElement ?
+          options.source.canvas :
+          this.canvas
+      )
+    ).captureStream(frameRate);
+  const recorder = new MediaRecorder(stream, {
+    mimeType: options?.mimeType ?? "video/webm;codecs=vp8"
+  });
+
+  recorder.addEventListener("start", (e) => {
+    console.log("recording started");
+  });
+
+  recorder.addEventListener("stop", (e) => {
+    const blob = new Blob(chunks);
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = "recording.webm";
+    link.click();
+  });
+
+  recorder.addEventListener("dataavailable", (e) => {
+    chunks.push(e.data);
+  });
+
+  recorder.addEventListener("pause", (e) => {
+    console.log("recording paused");
+  });
+
+  recorder.addEventListener("resume", (e) => {
+    console.log("recording resumed");
+  });
+
+  return {
+    recorder,
+    stream
+  };
+}
 
 if(typeof p5 !== "undefined"){
   p5.registerAddon(p5Record);
