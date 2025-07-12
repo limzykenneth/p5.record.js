@@ -2,16 +2,29 @@
   "name": "p5.record.js",
   "version": "0.0.1",
   "description": "p5.js addon providing functions to record HTML canvas based sketches",
+  "homepage": "https://github.com/limzykenneth/p5.record.js",
+  "bugs": "https://github.com/limzykenneth/p5.record.js/issues",
+  "repository": "github:limzykenneth/p5.record.js",
+  "author": "Kenneth Lim <hello@limzykenneth.com> (https://limzykenneth.com)",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "record",
+    "recorder",
+    "capture",
+    "canvas",
+    "p5",
+    "p5.js",
+    "captureStream"
+  ],
   "type": "module",
   "exports": {
     ".": "./dist/p5.record.esm.js"
   },
   "scripts": {
     "build": "rollup -c rollup.config.js",
-    "dev": "rollup -c rollup.config.js --watch"
+    "dev": "rollup -c rollup.config.js --watch",
+    "prepublishOnly": "npm run build"
   },
-  "author": "",
-  "license": "BSD-3-Clause",
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
     "rollup": "^4.41.1"
