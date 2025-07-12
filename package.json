@@ -16,6 +16,10 @@
     "p5.js",
     "captureStream"
   ],
+  "files": [
+    "dist/*",
+    "src/*"
+  ],
   "type": "module",
   "exports": {
     ".": "./dist/p5.record.esm.js"
