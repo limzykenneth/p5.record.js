@@ -14,6 +14,8 @@ export function p5Record(p5, fn, lifecycles){
     return;
   }
 
+  p5.Recorder = Recorder;
+
   lifecycles.postdraw = function() {
     if(recorder && recorder.state === "recording" && options?.frameRate === "manual"){
       recorder.frame();
