@@ -24,6 +24,7 @@
   "exports": {
     ".": "./dist/p5.record.esm.js"
   },
+  "browser": "./dist/p5.record.min.js",
   "scripts": {
     "build": "rollup -c rollup.config.js",
     "dev": "rollup -c rollup.config.js --watch",
