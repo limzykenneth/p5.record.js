@@ -1,4 +1,5 @@
 import { Recorder } from "./Recorder.js";
+import { imageTypesMap } from "./SequenceRecorder.js";
 
 export function p5Record(p5, fn, lifecycles){
   let recorder, options;
@@ -23,7 +24,13 @@ export function p5Record(p5, fn, lifecycles){
   };
 
   fn.setRecording = function(opt) {
-    if(opt.frameRate === "manual" && !("CanvasCaptureMediaStreamTrack" in window)){
+    if(
+      opt.frameRate === "manual" &&
+      (
+          !("CanvasCaptureMediaStreamTrack" in window) &&
+          !Object.keys(imageTypesMap).includes(opt.mimeType)
+      )
+    ){
       console.error("Your browser does not support directly specifying frame capture timing with { frameRate: 'manual' }.");
       return;
     }
