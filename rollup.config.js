@@ -15,7 +15,10 @@ export default [
     input: "src/main.js",
     output: {
       file: "dist/p5.record.esm.js",
-      format: "esm"
+      format: "esm",
+      plugins: [
+        process.env.ROLLUP_WATCH ? null :  terser()
+      ]
     }
   }
 ];
