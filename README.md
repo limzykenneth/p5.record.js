@@ -15,10 +15,10 @@ p5.record.js starts with a set of default configuration that covers the simplest
 To add p5.record.js to your sketch, include the following script tag in your HTML file:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/p5.record.js@0.1.2/dist/p5.record.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/p5.record.js@0.2.0/dist/p5.record.min.js"></script>
 ```
 
-ESM builds are also available either via CDN at https://cdn.jsdelivr.net/npm/p5.record.js@0.1.2-beta.0/dist/p5.record.esm.js or via NPM:
+ESM builds are also available either via CDN at https://cdn.jsdelivr.net/npm/p5.record.js@0.2.0/dist/p5.record.esm.js or via NPM:
 
 ```sh
 npm install p5.record.js
